@@ -1,18 +1,21 @@
 package server;
 
 import org.apache.commons.lang3.StringUtils;
+import utils.ClientInfo;
 import utils.ClientInfoServer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.beans.XMLDecoder;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import org.apache.commons.io.FilenameUtils;
+
+import java.beans.XMLEncoder;
 
 public class ChatServer {
     private ArrayList<ClientHandler> clientHandlerList = new ArrayList<>();
@@ -33,7 +36,19 @@ public class ChatServer {
     }
 
     public void initServer() throws IOException {
-
+        File folder = new File("dtb");
+        File[] listOfFiles = folder.listFiles();
+        for (File file: listOfFiles) {
+            FileInputStream fis = new FileInputStream(file);
+            XMLDecoder decoder = new XMLDecoder(fis);
+            ClientInfoServer tempClientInfo = (ClientInfoServer) decoder.readObject();
+            ClientInfoServer temp = new ClientInfoServer(tempClientInfo.getClientName(), tempClientInfo.getClientPassword(), tempClientInfo.getClientStatus(), tempClientInfo.getFriendList());
+            clientList.put(tempClientInfo.getClientName(), temp);
+            decoder.close();
+            fis.close();
+        }
+        ClientInfoServer temp = clientList.get("khuong");
+        System.out.println(temp.getClientPassword());
     }
 
     public void start() throws IOException {
