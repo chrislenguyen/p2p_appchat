@@ -46,7 +46,7 @@ public class ClientHandler implements Runnable{
                             this.handleLogout(segments[1]);
                             break;
                         case "addfriend":
-                            this.handleAddFriend(segments[1]);
+                            this.handleAddFriend(segments[0], segments[1]);
                             break;
                         case "connectfriend":
                             this.handleConnectFriend();
@@ -67,31 +67,33 @@ public class ClientHandler implements Runnable{
 
     private void handleSignup(String[] segments) throws IOException {
         System.out.println(String.format("[SERVER] Sign-up with username %s, password %s", segments[1], segments[2]));
-        String temp = server.findUsername(segments[1]);
-        if (temp.equals(segments[1])) {
-            sendSuccessRes(segments[0], segments[1], segments[2]);
-            return;
+        if (!server.findUsername(segments[1])) {
+            server.createAccount(segments[1], segments[2]);
+            sendSuccessRes(segments[0], segments[1]);
+        } else {
+            sendFailedRes(segments[0]);
         }
-        sendFailedRes(segments[0]);
     }
 
     private void handleLogin(String[] segments) throws IOException {
-        String username = server.findUsername(segments[1]);
-        String password = server.findUsername(segments[2]);
-        if (server.checkPassword(username, password)) {
-            server.markOnline(segments[0]);
-            sendSuccessRes(segments[0], segments[1], segments[2]);
+        if (server.checkPassword(segments[1], segments[2])) {
+            server.markOnline(segments[1]);
+            sendSuccessRes(segments[0], segments[1]);
         } else {
             sendFailedRes(segments[0]);
         };
     }
 
     private void handleLogout(String username) {
-
+        server.markOffline(username);
     }
 
-    private void handleAddFriend(String name) {
-        String temp = server.findUsername(name);
+    private void handleAddFriend(String req, String friendName) throws IOException {
+        if (server.findUsername(friendName)) {
+            server.addFriend(friendName);
+        } else {
+            sendFailedRes(req);
+        }
     }
 
     private void handleConnectFriend() {
@@ -102,7 +104,7 @@ public class ClientHandler implements Runnable{
 
     }
 
-    private void sendSuccessRes(String req, String username, String others) throws IOException {
+    private void sendSuccessRes(String req, String username) throws IOException {
         switch (req) {
             case "signup":
                 writer.writeUTF("signup-" + "success-" + username + '-' + client.getPort());

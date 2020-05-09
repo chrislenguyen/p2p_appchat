@@ -4,6 +4,7 @@ import utils.ClientInfo;
 import utils.ClientInfoServer;
 
 import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -33,32 +34,55 @@ public class ChatServer {
     public void initServer() throws IOException {
         File folder = new File("dtb");
         File[] listOfFiles = folder.listFiles();
-        for (File file: listOfFiles) {
+        for (File file : listOfFiles) {
             FileInputStream fis = new FileInputStream(file);
             XMLDecoder decoder = new XMLDecoder(fis);
             ClientInfoServer tempClientInfo = (ClientInfoServer) decoder.readObject();
-            ClientInfoServer temp = new ClientInfoServer(tempClientInfo.getClientName(), tempClientInfo.getClientPassword(), tempClientInfo.getClientStatus(), tempClientInfo.getFriendList());
+            ClientInfoServer temp = new ClientInfoServer(tempClientInfo.getClientName(),
+                    tempClientInfo.getClientPassword(), tempClientInfo.getClientStatus(), tempClientInfo.getFriendList());
             clientList.put(tempClientInfo.getClientName(), temp);
             decoder.close();
             fis.close();
         }
+        //---------------TEST ZONE---------------------//
         ClientInfoServer temp = clientList.get("khoa");
         System.out.println(temp.getClientName());
         System.out.println(temp.getClientPassword());
         System.out.println(temp.getClientStatus());
-        System.out.println(temp.getFriendList()
-        );
+        System.out.println(temp.getFriendList());
+        String user = "tom";
+        String password = "321";
+        createAccount(user, password);
+        markOnline("khoa");
+        System.out.println(temp.getClientStatus());
     }
 
-    public void markOnline(String username) {
+    public void createAccount(String username, String password) throws IOException {
+        ClientInfoServer newClient = new ClientInfoServer(username, password, "onl", "");
+        clientList.put(username, newClient);
+    }
+
+    public void markOnline(String username) throws IOException {
         String status = "on";
-        ClientInfoServer temp = new ClientInfoServer(username, clientList.get(username).getClientPassword(), status,
-                clientList.get(username).getFriendList());
+        ClientInfoServer temp = clientList.get(username);
+        temp.setClientStatus(status);
+        clientList.replace(username, temp);
+//        FileOutputStream fos = new FileOutputStream(new File("dtb/" + username + ".xml"));
+//        XMLEncoder encoder = new XMLEncoder(fos);
+//        encoder.writeObject(temp);
+//        encoder.close();
+//        fos.close();
+    }
+
+    public void markOffline(String username) {
+        String status = "off";
+        ClientInfoServer temp = clientList.get(username);
+        temp.setClientStatus(status);
         clientList.replace(username, temp);
     }
 
-    public boolean findriend(String username, int port) {
-        return true;
+    public void addFriend(String friendName) {
+        
     }
 
     public String checkLogout() {
@@ -70,10 +94,9 @@ public class ChatServer {
         return password.equals(value.getClientPassword());
     }
 
-    public String findUsername(String username) {
+    public boolean findUsername(String username) {
         ClientInfoServer value = clientList.get(username);
-        if (value != null) return value.getClientName();
-        return username;
+        return value != null;
     }
 
     public void start() throws IOException {
