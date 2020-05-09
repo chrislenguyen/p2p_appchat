@@ -1,6 +1,5 @@
 package server;
 
-import org.apache.commons.lang3.StringUtils;
 import utils.ClientInfo;
 import utils.ClientInfoServer;
 
@@ -10,12 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import org.apache.commons.io.FilenameUtils;
-
-import java.beans.XMLEncoder;
 
 public class ChatServer {
     private ArrayList<ClientHandler> clientHandlerList = new ArrayList<>();
@@ -47,8 +42,38 @@ public class ChatServer {
             decoder.close();
             fis.close();
         }
-        ClientInfoServer temp = clientList.get("khuong");
+        ClientInfoServer temp = clientList.get("khoa");
+        System.out.println(temp.getClientName());
         System.out.println(temp.getClientPassword());
+        System.out.println(temp.getClientStatus());
+        System.out.println(temp.getFriendList()
+        );
+    }
+
+    public void markOnline(String username) {
+        String status = "on";
+        ClientInfoServer temp = new ClientInfoServer(username, clientList.get(username).getClientPassword(), status,
+                clientList.get(username).getFriendList());
+        clientList.replace(username, temp);
+    }
+
+    public boolean findriend(String username, int port) {
+        return true;
+    }
+
+    public String checkLogout() {
+        return "a";
+    }
+
+    public boolean checkPassword(String username, String password) {
+        ClientInfoServer value = clientList.get(username);
+        return password.equals(value.getClientPassword());
+    }
+
+    public String findUsername(String username) {
+        ClientInfoServer value = clientList.get(username);
+        if (value != null) return value.getClientName();
+        return username;
     }
 
     public void start() throws IOException {
