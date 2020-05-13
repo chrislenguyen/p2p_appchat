@@ -46,35 +46,35 @@ public class ChatServer {
             fis.close();
         }
         //----------------------------TEST ZONE------------------------//
-        String user = "dang";
-        String password = "987";
-        LinkedList<String> friend = new LinkedList<>();
-                    //----CREATE NEW USER----//
-
+//        String user = "dang";
+//        String password = "987";
+//        LinkedList<String> friend = new LinkedList<>();
+//                    //----CREATE NEW USER----//
+//
 //        ClientInfoServer tempNew = new ClientInfoServer(user, password, "off", friend);
 //        FileOutputStream fos = new FileOutputStream(new File("dtb/" + user + ".xml"));
 //        XMLEncoder encoder = new XMLEncoder(fos);
 //        encoder.writeObject(tempNew);
 //        encoder.close();
 //        fos.close();
-                    //---------------------//
-        String name = "khuong";
-        createAccount(user, password);
-        addFriend(name, "tom");
-        addFriend(user, "khuong");
-        ClientInfoServer temp = clientList.get(user);
+//                    //---------------------//
+//        String name = "khuong";
+//        createAccount(user, password);
+//        addFriend(name, "tom");
+//        addFriend(user, "khuong");
+//        ClientInfoServer temp = clientList.get(user);
 //        temp.setFriendList(friend);
-        System.out.println(temp.getClientName());
-        System.out.println(temp.getClientPassword());
-        System.out.println(temp.getClientStatus());
-        System.out.println(temp.getFriendList());
-        markOffline(name);
-        System.out.println(temp.getClientStatus());
-        removeFriend(name, "tuan");
-        ClientInfoServer anotherTemp = clientList.get("khuong");
-        System.out.println(anotherTemp.getClientName());
-        System.out.println(anotherTemp.getFriendList());
-        logEverything();
+//        System.out.println(temp.getClientName());
+//        System.out.println(temp.getClientPassword());
+//        System.out.println(temp.getClientStatus());
+//        System.out.println(temp.getFriendList());
+//        markOffline(name);
+//        System.out.println(temp.getClientStatus());
+//        removeFriend(name, "tuan");
+//        ClientInfoServer anotherTemp = clientList.get("khuong");
+//        System.out.println(anotherTemp.getClientName());
+//        System.out.println(anotherTemp.getFriendList());
+//        logEverything();
         //-------------------------------------------------------------//
     }
 
@@ -89,11 +89,6 @@ public class ChatServer {
         ClientInfoServer temp = clientList.get(username);
         temp.setClientStatus(status);
         clientList.replace(username, temp);
-//        FileOutputStream fos = new FileOutputStream(new File("dtb/" + username + ".xml"));
-//        XMLEncoder encoder = new XMLEncoder(fos);
-//        encoder.writeObject(temp);
-//        encoder.close();
-//        fos.close();
     }
 
     public LinkedList<String> findOnlineFriend(String username) {

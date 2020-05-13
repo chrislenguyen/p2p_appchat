@@ -118,7 +118,7 @@ public class ClientHandler implements Runnable{
     private void handleAddFriend(String req, String friendName) throws IOException {
         if (server.findUsername(friendName)) {
             server.removeFriend(clientInfo.getClientName(), friendName);
-//            notifyOnline();
+            notifyOnline();
             sendSuccessRes(req, friendName);
         } else {
             sendFailedRes(req);
