@@ -6,13 +6,13 @@ public class ClientInfoServer {
     private String clientName;
     private String clientPassword;
     private String clientStatus;
-    private String friendList;
+    private LinkedList<String> friendList;
 
     public ClientInfoServer() {
 
     }
 
-    public ClientInfoServer(String clientName, String clientPassword, String clientStatus, String friendList) {
+    public ClientInfoServer(String clientName, String clientPassword, String clientStatus, LinkedList<String> friendList) {
         this.clientName = clientName;
         this.clientPassword = clientPassword;
         this.clientStatus = clientStatus;
@@ -31,7 +31,7 @@ public class ClientInfoServer {
         return clientStatus;
     }
 
-    public String getFriendList() {
+    public LinkedList<String> getFriendList() {
         return friendList;
     }
 
@@ -47,7 +47,7 @@ public class ClientInfoServer {
         this.clientStatus = clientStatus;
     }
 
-    public void setFriendList(String friendList) {
+    public void setFriendList(LinkedList<String> friendList) {
         this.friendList = friendList;
     }
 }

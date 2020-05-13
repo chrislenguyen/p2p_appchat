@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -45,20 +46,41 @@ public class ChatServer {
             fis.close();
         }
         //---------------TEST ZONE---------------------//
-        ClientInfoServer temp = clientList.get("khoa");
+//        String user = "tom";
+//        String password = "321";
+//        LinkedList<String> friend = new LinkedList<>();
+                    //----CREATE NEW USER----//
+
+//        friend.add("khuong");
+//        friend.add("khoa");
+//        ClientInfoServer tempNew = new ClientInfoServer(user, password, "off", friend);
+//        FileOutputStream fos = new FileOutputStream(new File("dtb/" + user + ".xml"));
+//        XMLEncoder encoder = new XMLEncoder(fos);
+//        encoder.writeObject(tempNew);
+//        encoder.close();
+//        fos.close();
+                    //---------------------//
+        String name = "khuong";
+//        createAccount(user, password);
+        addFriend(name, "tom");
+        addFriend(name, "tom");
+        ClientInfoServer temp = clientList.get(name);
+//        temp.setFriendList(friend);
         System.out.println(temp.getClientName());
-        System.out.println(temp.getClientPassword());
-        System.out.println(temp.getClientStatus());
+//        System.out.println(temp.getClientPassword());
+//        System.out.println(temp.getClientStatus());
         System.out.println(temp.getFriendList());
-        String user = "tom";
-        String password = "321";
-        createAccount(user, password);
-        markOnline("khoa");
-        System.out.println(temp.getClientStatus());
+//        markOffline(name);
+//        System.out.println(temp.getClientStatus());
+        ClientInfoServer anotherTemp = clientList.get("tom");
+        System.out.println(anotherTemp.getClientName());
+        System.out.println(anotherTemp.getFriendList());
+        //-------------------------------------------------------------//
     }
 
     public void createAccount(String username, String password) throws IOException {
-        ClientInfoServer newClient = new ClientInfoServer(username, password, "onl", "");
+        LinkedList<String> empty = new LinkedList<>();
+        ClientInfoServer newClient = new ClientInfoServer(username, password, "on", empty);
         clientList.put(username, newClient);
     }
 
@@ -74,6 +96,17 @@ public class ChatServer {
 //        fos.close();
     }
 
+    public LinkedList<String> findOnlineFriend(String username) {
+        ClientInfoServer temp = clientList.get(username);
+        LinkedList<String> tempList = new LinkedList<>();
+        for (String friend : temp.getFriendList()) {
+            if (clientList.get(friend).getClientStatus().equals("on")) {
+                tempList.add(clientList.get(friend).getClientName());
+            }
+        }
+        return tempList;
+    }
+
     public void markOffline(String username) {
         String status = "off";
         ClientInfoServer temp = clientList.get(username);
@@ -81,12 +114,14 @@ public class ChatServer {
         clientList.replace(username, temp);
     }
 
-    public void addFriend(String friendName) {
-        
-    }
-
-    public String checkLogout() {
-        return "a";
+    public void addFriend(String username, String friendName) {
+        ClientInfoServer temp = clientList.get(username);
+        for (String friend : temp.getFriendList()) {
+            if (friend.equals(friendName)) return;
+        }
+        temp.getFriendList().add(friendName);
+        ClientInfoServer anotherTemp = clientList.get(friendName);
+        anotherTemp.getFriendList().add(username);
     }
 
     public boolean checkPassword(String username, String password) {
@@ -97,6 +132,10 @@ public class ChatServer {
     public boolean findUsername(String username) {
         ClientInfoServer value = clientList.get(username);
         return value != null;
+    }
+
+    public void logEverything() {
+
     }
 
     public void start() throws IOException {

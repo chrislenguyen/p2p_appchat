@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.LinkedList;
+
 import org.apache.commons.lang3.StringUtils;
 import utils.ClientInfo;
 
@@ -43,7 +45,7 @@ public class ClientHandler implements Runnable{
                             this.handleLogin(segments);
                             break;
                         case "logout":
-                            this.handleLogout(segments[1]);
+                            this.handleLogout();
                             break;
                         case "addfriend":
                             this.handleAddFriend(segments[0], segments[1]);
@@ -54,6 +56,12 @@ public class ClientHandler implements Runnable{
                         case "removefriend":
                             this.handleRemoveFriend();
                             break;
+//                        case "notifyonline":
+//                            this.handleNotifyLogIn();
+//                            break;
+//                        case "notifyoffline":
+//                            this.handleNotifyLogOut();
+//                            break;
                         default:
                             System.out.println("Unknown " + type);
                     }
@@ -65,10 +73,26 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    private void notifyOnline() throws IOException {
+        LinkedList<String> listOfOnlineFriend = server.findOnlineFriend(clientInfo.getClientName());
+        for (String friend : listOfOnlineFriend) {
+            writer.writeUTF("notifyonline" + friend);
+        }
+    }
+
+    private void notifyOffline(String clientName) throws IOException {
+        LinkedList<String> listOfOnlineFriend = server.findOnlineFriend(clientInfo.getClientName());
+        for (String friend : listOfOnlineFriend) {
+            writer.writeUTF("notifyoffline" + friend);
+        }
+    }
+
     private void handleSignup(String[] segments) throws IOException {
         System.out.println(String.format("[SERVER] Sign-up with username %s, password %s", segments[1], segments[2]));
         if (!server.findUsername(segments[1])) {
             server.createAccount(segments[1], segments[2]);
+            clientInfo.setClientName(segments[1]);
+            server.markOnline(clientInfo.getClientName());
             sendSuccessRes(segments[0], segments[1]);
         } else {
             sendFailedRes(segments[0]);
@@ -77,20 +101,24 @@ public class ClientHandler implements Runnable{
 
     private void handleLogin(String[] segments) throws IOException {
         if (server.checkPassword(segments[1], segments[2])) {
-            server.markOnline(segments[1]);
+            clientInfo.setClientName(segments[1]);
+            server.markOnline(clientInfo.getClientName());
+            notifyOnline();
             sendSuccessRes(segments[0], segments[1]);
         } else {
             sendFailedRes(segments[0]);
         };
     }
 
-    private void handleLogout(String username) {
-        server.markOffline(username);
+    private void handleLogout() throws IOException {
+        server.markOffline(clientInfo.getClientName());
+        notifyOffline(clientInfo.getClientName());
     }
 
     private void handleAddFriend(String req, String friendName) throws IOException {
         if (server.findUsername(friendName)) {
-            server.addFriend(friendName);
+            server.addFriend(clientInfo.getClientName(), friendName);
+            notifyOnline();
         } else {
             sendFailedRes(req);
         }
@@ -128,6 +156,7 @@ public class ClientHandler implements Runnable{
         switch (req) {
             case "signup":
                 writer.writeUTF("signup-" + "failed");
+                System.out.println("signup fail");
                 break;
             case "login":
                 writer.writeUTF("login-" + "failed");
