@@ -54,7 +54,7 @@ public class ClientHandler implements Runnable{
                             this.handleConnectFriend();
                             break;
                         case "removefriend":
-                            this.handleRemoveFriend();
+                            this.handleRemoveFriend(segments[0], segments[1]);
                             break;
 //                        case "notifyonline":
 //                            this.handleNotifyLogIn();
@@ -117,8 +117,9 @@ public class ClientHandler implements Runnable{
 
     private void handleAddFriend(String req, String friendName) throws IOException {
         if (server.findUsername(friendName)) {
-            server.addFriend(clientInfo.getClientName(), friendName);
-            notifyOnline();
+            server.removeFriend(clientInfo.getClientName(), friendName);
+//            notifyOnline();
+            sendSuccessRes(req, friendName);
         } else {
             sendFailedRes(req);
         }
@@ -128,8 +129,14 @@ public class ClientHandler implements Runnable{
 
     }
 
-    private void handleRemoveFriend() {
-
+    private void handleRemoveFriend(String req, String friendName) throws IOException {
+        if (server.findUsername(friendName)) {
+            server.addFriend(clientInfo.getClientName(), friendName);
+            notifyOnline();
+            sendSuccessRes(req, friendName);
+        } else {
+            sendFailedRes(req);
+        }
     }
 
     private void sendSuccessRes(String req, String username) throws IOException {

@@ -45,14 +45,12 @@ public class ChatServer {
             decoder.close();
             fis.close();
         }
-        //---------------TEST ZONE---------------------//
-//        String user = "tom";
-//        String password = "321";
-//        LinkedList<String> friend = new LinkedList<>();
+        //----------------------------TEST ZONE------------------------//
+        String user = "dang";
+        String password = "987";
+        LinkedList<String> friend = new LinkedList<>();
                     //----CREATE NEW USER----//
 
-//        friend.add("khuong");
-//        friend.add("khoa");
 //        ClientInfoServer tempNew = new ClientInfoServer(user, password, "off", friend);
 //        FileOutputStream fos = new FileOutputStream(new File("dtb/" + user + ".xml"));
 //        XMLEncoder encoder = new XMLEncoder(fos);
@@ -61,20 +59,22 @@ public class ChatServer {
 //        fos.close();
                     //---------------------//
         String name = "khuong";
-//        createAccount(user, password);
+        createAccount(user, password);
         addFriend(name, "tom");
-        addFriend(name, "tom");
-        ClientInfoServer temp = clientList.get(name);
+        addFriend(user, "khuong");
+        ClientInfoServer temp = clientList.get(user);
 //        temp.setFriendList(friend);
         System.out.println(temp.getClientName());
-//        System.out.println(temp.getClientPassword());
-//        System.out.println(temp.getClientStatus());
+        System.out.println(temp.getClientPassword());
+        System.out.println(temp.getClientStatus());
         System.out.println(temp.getFriendList());
-//        markOffline(name);
-//        System.out.println(temp.getClientStatus());
-        ClientInfoServer anotherTemp = clientList.get("tom");
+        markOffline(name);
+        System.out.println(temp.getClientStatus());
+        removeFriend(name, "tuan");
+        ClientInfoServer anotherTemp = clientList.get("khuong");
         System.out.println(anotherTemp.getClientName());
         System.out.println(anotherTemp.getFriendList());
+        logEverything();
         //-------------------------------------------------------------//
     }
 
@@ -115,13 +115,24 @@ public class ChatServer {
     }
 
     public void addFriend(String username, String friendName) {
-        ClientInfoServer temp = clientList.get(username);
-        for (String friend : temp.getFriendList()) {
+        for (String friend : clientList.get(username).getFriendList()) {
             if (friend.equals(friendName)) return;
         }
-        temp.getFriendList().add(friendName);
-        ClientInfoServer anotherTemp = clientList.get(friendName);
-        anotherTemp.getFriendList().add(username);
+        clientList.get(username).getFriendList().add(friendName);
+        clientList.get(friendName).getFriendList().add(username);
+    }
+
+    public void removeFriend(String username, String friendName) {
+       for (int i = 0; i < clientList.get(username).getFriendList().size(); i++) {
+           if (clientList.get(username).getFriendList().get(i).equals(friendName)) {
+               clientList.get(username).getFriendList().remove(i);
+           }
+        }
+        for (int i = 0; i < clientList.get(friendName).getFriendList().size(); i++) {
+            if (clientList.get(friendName).getFriendList().get(i).equals(username)) {
+                clientList.get(friendName).getFriendList().remove(i);
+            }
+        }
     }
 
     public boolean checkPassword(String username, String password) {
@@ -134,8 +145,16 @@ public class ChatServer {
         return value != null;
     }
 
-    public void logEverything() {
-
+    public void logEverything() throws IOException {
+        for (String key : clientList.keySet()) {
+            ClientInfoServer temp = clientList.get(key);
+            markOffline(key);
+            FileOutputStream fos = new FileOutputStream(new File("dtb/" + key + ".xml"));
+            XMLEncoder encoder = new XMLEncoder(fos);
+            encoder.writeObject(temp);
+            encoder.close();
+            fos.close();
+        }
     }
 
     public void start() throws IOException {

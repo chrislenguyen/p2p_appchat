@@ -16,7 +16,10 @@
      <string>khoa</string>
     </void>
     <void method="add">
-     <string>tuan</string>
+     <string>tom</string>
+    </void>
+    <void method="add">
+     <string>dang</string>
     </void>
    </object>
   </void>
