@@ -8,10 +8,10 @@
    <string>321</string>
   </void>
   <void property="clientStatus">
-   <string>onl</string>
+   <string>off</string>
   </void>
   <void property="friendList">
-   <string></string>
+   <object class="java.util.LinkedList"/>
   </void>
  </object>
 </java>

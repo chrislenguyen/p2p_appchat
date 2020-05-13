@@ -11,7 +11,14 @@
    <string>off</string>
   </void>
   <void property="friendList">
-   <string>tuan khuong</string>
+   <object class="java.util.LinkedList">
+    <void method="add">
+     <string>khuong</string>
+    </void>
+    <void method="add">
+     <string>tuan</string>
+    </void>
+   </object>
   </void>
  </object>
 </java>
