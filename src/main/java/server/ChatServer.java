@@ -46,8 +46,10 @@ public class ChatServer {
             fis.close();
         }
         //----------------------------TEST ZONE------------------------//
-        String user = "khuong";
-        System.out.println(getFriendList(user));
+//        String user = "khuong";
+//        System.out.println(getFriendList(user));
+//        String temp = System.getProperty("os.name");
+//        System.out.println(temp);
 //        String password = "789";
 //        String name = "tom";
 //        createAccount(user, password);
@@ -71,9 +73,11 @@ public class ChatServer {
 
     public ClientHandler getClientHandler (String name) {
         for(ClientHandler c: clientHandlerList) {
-            if (clientList.get(c.getNameClientInfo()).getClientStatus().equals("on")) {
-                if (c.getClientInfo().getClientName().equals(name)) {
-                    return c;
+            if (c.getClientInfo() != null) {
+                if(c.getClientInfo().getClientName().equals(name)) {
+                    if (this.clientList.get(name).getClientStatus().equals("on")) {
+                        return c;
+                    }
                 }
             }
         }

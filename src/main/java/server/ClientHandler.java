@@ -18,7 +18,7 @@ public class ClientHandler implements Runnable{
 
     public boolean logged = false;
 
-    private ClientInfo clientInfo;
+    private ClientInfo clientInfo = null;
 
     public ClientHandler(ChatServer server, Socket client) {
         this.server = server;
@@ -53,13 +53,13 @@ public class ClientHandler implements Runnable{
                             this.handleAddFriend(segments[0], segments[1]);
                             break;
                         case "connectfriendto":
-                            this.handleConnectFriend(segments[1]);
+                            this.handleConnectFriend(segments[1], segments[2]);
                             break;
                         case "removefriend":
                             this.handleRemoveFriend(segments[0], segments[1]);
                             break;
                         case "acceptconnectfriend":
-                            this.handleConnectFriendFrom(segments[1], segments[2]);
+                            this.handleConnectFriendFrom(segments[1], segments[2], segments[3]);
                             break;
 //                        case "notifyonline":
 //                            this.handleNotifyLogIn();
@@ -109,7 +109,7 @@ public class ClientHandler implements Runnable{
 //            clientInfo.setClientName(segments[1]);
             this.clientInfo = new ClientInfo(segments[1]);
             server.markOnline(clientInfo.getClientName());
-            notifyOnline();
+//            notifyOnline();
             sendSuccessRes(segments[0], segments[1]);
         } else {
             sendFailedRes(segments[0]);
@@ -131,17 +131,17 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    private void handleConnectFriend(String friendName) throws IOException {
-        ClientHandler c = server.getClientHandler(friendName);
+    private void handleConnectFriend(String nameFrom, String nameTo) throws IOException {
+        ClientHandler c = this.server.getClientHandler(nameTo);
         if (c != null) {
-            c.sendRequestConnectFriend(this.clientInfo.getClientName());
+            c.sendRequestConnectFriend(nameFrom, nameTo);
         }
     }
 
-    private void handleConnectFriendFrom(String username, String port) throws IOException {
-        ClientHandler c = server.getClientHandler(username);
+    private void handleConnectFriendFrom(String nameFrom, String nameTo ,String port) throws IOException {
+        ClientHandler c = server.getClientHandler(nameFrom);
         if (c != null) {
-            c.sendReponseConnectFriend(this.clientInfo.getClientName(), port);
+            c.sendReponseConnectFriend(nameFrom, nameTo, port);
         }
     }
 
@@ -200,19 +200,16 @@ public class ClientHandler implements Runnable{
         }
     }
 
-    public void sendRequestConnectFriend(String targetName) throws IOException {
-        this.writer.writeUTF("connectfriendto-" + targetName);
+    public void sendRequestConnectFriend(String nameFrom, String nameTo) throws IOException {
+        this.writer.writeUTF("connectfriendto-" + nameFrom + "-" + nameTo);
     }
 
-    public void sendReponseConnectFriend(String targetName, String port) throws IOException{
-        this.writer.writeUTF("acceptconnectfriend-" + targetName + client.getInetAddress().toString().substring(1) + port);
+    public void sendReponseConnectFriend(String nameFrom, String nameTo, String port) throws IOException{
+        this.writer.writeUTF("acceptconnectfriend-" + nameFrom + "-" + nameTo + "-" + client.getInetAddress().toString().substring(1) + port);
     }
 
     public ClientInfo getClientInfo() {
         return clientInfo;
     }
 
-    public String getNameClientInfo() {
-        return clientInfo.getClientName();
-    }
 }
