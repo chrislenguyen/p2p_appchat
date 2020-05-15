@@ -46,49 +46,58 @@ public class ChatServer {
             fis.close();
         }
         //----------------------------TEST ZONE------------------------//
-//        String user = "dang";
-//        String password = "987";
-//        LinkedList<String> friend = new LinkedList<>();
-//                    //----CREATE NEW USER----//
-//
-//        ClientInfoServer tempNew = new ClientInfoServer(user, password, "off", friend);
-//        FileOutputStream fos = new FileOutputStream(new File("dtb/" + user + ".xml"));
-//        XMLEncoder encoder = new XMLEncoder(fos);
-//        encoder.writeObject(tempNew);
-//        encoder.close();
-//        fos.close();
-//                    //---------------------//
-//        String name = "khuong";
+        String user = "khuong";
+        System.out.println(getFriendList(user));
+//        String password = "789";
+//        String name = "tom";
 //        createAccount(user, password);
-//        addFriend(name, "tom");
-//        addFriend(user, "khuong");
-//        ClientInfoServer temp = clientList.get(user);
-//        temp.setFriendList(friend);
-//        System.out.println(temp.getClientName());
-//        System.out.println(temp.getClientPassword());
-//        System.out.println(temp.getClientStatus());
-//        System.out.println(temp.getFriendList());
-//        markOffline(name);
-//        System.out.println(temp.getClientStatus());
-//        removeFriend(name, "tuan");
-//        ClientInfoServer anotherTemp = clientList.get("khuong");
+//        addFriend(name  , "tom");
+//        addFriend(name, "khuong");
+//        addFriend(name, "khoa");
+//        addFriend(name, "tuan");
+//        removeFriend(name, "thien");
+//        addFriend(name, "tuan");
+//        for (String key : clientList.keySet()) {
+//            ClientInfoServer temp = clientList.get(key);
+//            System.out.println(temp.getClientName());
+//            System.out.println(temp.getFriendList());
+//        }
+//        ClientInfoServer anotherTemp = clientList.get(name);
 //        System.out.println(anotherTemp.getClientName());
 //        System.out.println(anotherTemp.getFriendList());
 //        logEverything();
         //-------------------------------------------------------------//
     }
 
-    public void createAccount(String username, String password) throws IOException {
+    public ClientHandler getClientHandler (String name) {
+        for(ClientHandler c: clientHandlerList) {
+            if (clientList.get(c.getNameClientInfo()).getClientStatus().equals("on")) {
+                if (c.getClientInfo().getClientName().equals(name)) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    public int getNumFriend(String username) {
+        return clientList.get(username).getFriendList().size();
+    }
+
+    public void createAccount(String username, String password) {
         LinkedList<String> empty = new LinkedList<>();
         ClientInfoServer newClient = new ClientInfoServer(username, password, "on", empty);
         clientList.put(username, newClient);
     }
 
-    public void markOnline(String username) throws IOException {
+    public void markOnline(String username) {
         String status = "on";
-        ClientInfoServer temp = clientList.get(username);
-        temp.setClientStatus(status);
-        clientList.replace(username, temp);
+        clientList.get(username).setClientStatus(status);
+    }
+
+    public void markOffline(String username) {
+        String status = "off";
+        clientList.get(username).setClientStatus(status);
     }
 
     public LinkedList<String> findOnlineFriend(String username) {
@@ -102,19 +111,16 @@ public class ChatServer {
         return tempList;
     }
 
-    public void markOffline(String username) {
-        String status = "off";
-        ClientInfoServer temp = clientList.get(username);
-        temp.setClientStatus(status);
-        clientList.replace(username, temp);
-    }
-
     public void addFriend(String username, String friendName) {
-        for (String friend : clientList.get(username).getFriendList()) {
-            if (friend.equals(friendName)) return;
+        for (String key : clientList.keySet()) {
+            if (key.equals(friendName)) {
+                for (String friend : clientList.get(username).getFriendList()) {
+                    if (friend.equals(friendName) || friendName.equals(username)) return;
+                }
+                clientList.get(username).getFriendList().add(friendName);
+                clientList.get(friendName).getFriendList().add(username);
+            }
         }
-        clientList.get(username).getFriendList().add(friendName);
-        clientList.get(friendName).getFriendList().add(username);
     }
 
     public void removeFriend(String username, String friendName) {
@@ -152,6 +158,15 @@ public class ChatServer {
         }
     }
 
+    public String getClientStatus (String username) {
+        return clientList.get(username).getClientStatus();
+
+    }
+
+    public LinkedList<String> getFriendList (String username) {
+        return clientList.get(username).getFriendList();
+    }
+
     public void start() throws IOException {
         System.out.println("[SERVER] Start server.");
         initServer();
@@ -160,7 +175,9 @@ public class ChatServer {
             serverSocket = new ServerSocket(this.serverPort);
             while (true) {
                 Socket client = serverSocket.accept();
-                executor.execute(new ClientHandler(this, client));
+                ClientHandler c = new ClientHandler(this, client);
+                clientHandlerList.add(c);
+                executor.execute(c);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -2,10 +2,10 @@
 <java version="14.0.1" class="java.beans.XMLDecoder">
  <object class="utils.ClientInfoServer">
   <void property="clientName">
-   <string>khuong</string>
+   <string>thien</string>
   </void>
   <void property="clientPassword">
-   <string>123</string>
+   <string>208</string>
   </void>
   <void property="clientStatus">
    <string>off</string>
@@ -13,19 +13,13 @@
   <void property="friendList">
    <object class="java.util.LinkedList">
     <void method="add">
-     <string>khoa</string>
-    </void>
-    <void method="add">
      <string>tom</string>
     </void>
     <void method="add">
      <string>dang</string>
     </void>
     <void method="add">
-     <string>thien</string>
-    </void>
-    <void method="add">
-     <string>tuan</string>
+     <string>khuong</string>
     </void>
    </object>
   </void>

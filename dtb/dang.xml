@@ -15,6 +15,9 @@
     <void method="add">
      <string>khuong</string>
     </void>
+    <void method="add">
+     <string>thien</string>
+    </void>
    </object>
   </void>
  </object>

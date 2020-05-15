@@ -13,6 +13,9 @@
   <void property="friendList">
    <object class="java.util.LinkedList">
     <void method="add">
+     <string>khuong</string>
+    </void>
+    <void method="add">
      <string>khoa</string>
     </void>
    </object>
